@@ -1,0 +1,33 @@
+{
+  "name": "@waterjar/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@reduxjs/toolkit": "^2.2.3",
+    "@waterjar/types": "file:../../packages/types",
+    "expo": "~54.0.0",
+    "expo-status-bar": "~3.0.9",
+    "nativewind": "^2.0.11",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.51.3",
+    "react-native": "0.81.5",
+    "react-native-web": "~0.21.0",
+    "react-redux": "^9.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~19.1.10",
+    "tailwindcss": "3.3.2",
+    "typescript": "~5.9.2"
+  }
+}

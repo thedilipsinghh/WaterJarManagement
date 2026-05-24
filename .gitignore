@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+
+# turbo
+.turbo
+
+# next
+.next
+
+.env
+.env.*
+**/.env
+**/.env.*
+# expo
+.expo
+
+# build
+dist
+build
+
+# env
+.env
+.env.local
+
+# logs
+*.log
+
+# typescript
+*.tsbuildinfo
+
+
+*.txt
