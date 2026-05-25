@@ -7,8 +7,7 @@ const getBaseUrl = () => {
   if (isReactNative) {
     return "http://10.0.2.2:5000/api"
   }
-  const globalProcess = typeof globalThis !== "undefined" ? (globalThis as any).process : undefined
-  const nextPublicUrl = globalProcess?.env?.NEXT_PUBLIC_API_URL
+  const nextPublicUrl = process.env.NEXT_PUBLIC_API_URL
   return nextPublicUrl || "http://localhost:5000/api"
 }
 
