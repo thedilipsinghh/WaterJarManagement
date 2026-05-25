@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { ApiResponse, AuthResponse, User } from "@waterjar/types"
 import { setCredentials, clearCredentials } from "../authSlice"
+import { env } from "../../config/env"
 
 const getBaseUrl = () => {
   const isReactNative = typeof navigator !== "undefined" && navigator.product === "ReactNative"
   if (isReactNative) {
     return "http://10.0.2.2:5000/api"
   }
-  const nextPublicUrl = process.env.NEXT_PUBLIC_API_URL
-  return nextPublicUrl || "http://localhost:5000/api"
+  return env.API_URL
 }
 
 export const baseApi = createApi({
