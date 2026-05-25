@@ -34,6 +34,13 @@ export const customerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Customers", "Stats"],
     }),
+    payBill: builder.mutation<ApiResponse<any>, number>({
+      query: (billId) => ({
+        url: `/customer/bills/${billId}/pay`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Bills", "Usage", "Stats"],
+    }),
   }),
   overrideExisting: true,
 })
@@ -45,4 +52,5 @@ export const {
   useGetCustomerBillsQuery,
   useGetCustomerSpendingQuery,
   useRequestStopServiceMutation,
+  usePayBillMutation,
 } = customerApi

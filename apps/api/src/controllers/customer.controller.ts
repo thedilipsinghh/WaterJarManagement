@@ -154,6 +154,59 @@ export class CustomerController {
     }
   }
 
+  async payBill(req: Request, res: Response) {
+    try {
+      const authUser = (req as any).user
+      const customer = await this.getCustomerByUserId(authUser.id)
+      const { id } = req.params // bill.id
+
+      const billRecord = await db
+        .select()
+        .from(bills)
+        .where(and(eq(bills.id, Number(id)), eq(bills.customerId, customer.id)))
+        .limit(1)
+
+      if (billRecord.length === 0) {
+        return res.status(404).json({ message: "Bill not found or access denied." })
+      }
+
+      const bill = billRecord[0]
+
+      if (bill.status === "paid") {
+        return res.status(400).json({ message: "Bill is already paid." })
+      }
+
+      // Get Vendor user ID to send notification
+      const vendorRecord = await db.select().from(vendors).where(eq(vendors.id, bill.vendorId)).limit(1)
+      if (vendorRecord.length === 0) {
+        return res.status(404).json({ message: "Associated vendor profile not found." })
+      }
+      const vendor = vendorRecord[0]
+
+      await db.transaction(async (tx) => {
+        await tx
+          .update(bills)
+          .set({ status: "paid", updatedAt: new Date() })
+          .where(eq(bills.id, bill.id))
+
+        // Create alert for vendor
+        await tx.insert(notifications).values({
+          userId: vendor.userId,
+          title: "Payment Received Alert",
+          message: `Customer ${authUser.name} has paid the bill for ${bill.month} of amount ₹${bill.amount}.`,
+          read: false,
+        })
+      })
+
+      res.status(200).json({
+        message: "Payment successful. Invoice updated to Paid.",
+      })
+    } catch (error: any) {
+      console.error(error)
+      res.status(500).json({ message: error.message || "Unable to complete payment" })
+    }
+  }
+
   // Create order function (useful for customer app to request a delivery)
   async createOrder(req: Request, res: Response) {
     try {

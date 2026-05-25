@@ -1,19 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { ApiResponse, AuthResponse, User } from "@waterjar/types"
-import { NativeModules } from "react-native"
+import { NativeModules, Platform } from "react-native"
 import { setCredentials, clearCredentials } from "../authSlice"
 
 const getBaseUrl = () => {
-  const isReactNative = typeof navigator !== "undefined" && navigator.product === "ReactNative"
-  if (isReactNative) {
-    const scriptURL = NativeModules.SourceCode?.scriptURL || ""
-    const match = scriptURL.match(/^https?:\/\/([^:/]+)(:\d+)?/)
-    const ip = match ? match[1] : "192.168.43.107"
-    return `http://${ip}:5000/api`
+  const scriptURL = NativeModules.SourceCode?.scriptURL || ""
+  const match = scriptURL.match(/^https?:\/\/([^:/]+)(:\d+)?/)
+  let ip = "192.168.1.12" // Fallback to host LAN IP so both physical phones and emulators can connect
+  if (match) {
+    ip = match[1]
+    if ((ip === "localhost" || ip === "127.0.0.1") && Platform.OS === "android") {
+      ip = "10.0.2.2"
+    }
   }
-  const globalProcess = typeof globalThis !== "undefined" ? (globalThis as any).process : undefined
-  const nextPublicUrl = globalProcess?.env?.NEXT_PUBLIC_API_URL
-  return nextPublicUrl || "http://localhost:5000/api"
+  const url = `http://${ip}:5000/api`
+  console.log(`[MOBILE BASE URL]: ${url} (scriptURL: ${scriptURL})`)
+  return url
 }
 
 export const baseApi = createApi({

@@ -9,6 +9,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Alert,
+  Platform,
+  StatusBar as RNStatusBar,
 } from "react-native"
 import { Provider } from "react-redux"
 import { store } from "./src/store/store"
@@ -62,7 +64,10 @@ function MainApp() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <SafeAreaView 
+      style={{ paddingTop: Platform.OS === "android" ? RNStatusBar.currentHeight : 0 }} 
+      className="flex-1 bg-slate-50"
+    >
       <StatusBar style="dark" />
 
       {/* 0. Home / Landing Screen */}

@@ -11,6 +11,7 @@ router.get("/orders", customerController.listOrders.bind(customerController))
 router.get("/orders/monthly", customerController.listMonthlyOrders.bind(customerController))
 router.post("/orders", customerController.createOrder.bind(customerController))
 router.get("/bills", customerController.listBills.bind(customerController))
+router.post("/bills/:id/pay", customerController.payBill.bind(customerController))
 router.post("/service-requests/stop", customerController.requestStopService.bind(customerController))
 router.get("/spending", customerController.getSpending.bind(customerController))
 

@@ -18,12 +18,30 @@ export const baseApi = createApi({
     baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
       let token = (getState() as any).auth?.token
-      if (!token && typeof window !== "undefined") {
-        token = localStorage.getItem("accessToken")
+      let role = (getState() as any).auth?.user?.role
+
+      let activeRole = ""
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname
+        if (path.startsWith("/admin")) activeRole = "admin"
+        else if (path.startsWith("/vendor")) activeRole = "vendor"
+        else if (path.startsWith("/customer")) activeRole = "customer"
       }
+
+      if (!token && typeof window !== "undefined") {
+        const key = activeRole ? `accessToken_${activeRole}` : "accessToken"
+        token = localStorage.getItem(key)
+      }
+
       if (token) {
         headers.set("Authorization", `Bearer ${token}`)
       }
+
+      const finalRole = activeRole || role
+      if (finalRole) {
+        headers.set("X-User-Role", finalRole)
+      }
+
       return headers
     },
     credentials: "include",
@@ -44,7 +62,8 @@ export const baseApi = createApi({
             const { user, accessToken } = data.result
             dispatch(setCredentials({ user, token: accessToken }))
             if (typeof window !== "undefined") {
-              localStorage.setItem("accessToken", accessToken)
+              localStorage.setItem(`accessToken_${user.role}`, accessToken)
+              localStorage.setItem("accessToken", accessToken) // fallback
             }
           }
         } catch (err) {
@@ -65,11 +84,15 @@ export const baseApi = createApi({
         method: "POST",
       }),
       invalidatesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, getState, queryFulfilled }) {
         try {
+          const role = (getState() as any).auth?.user?.role
           await queryFulfilled
           dispatch(clearCredentials())
           if (typeof window !== "undefined") {
+            if (role) {
+              localStorage.removeItem(`accessToken_${role}`)
+            }
             localStorage.removeItem("accessToken")
           }
         } catch (err) {
@@ -84,10 +107,13 @@ export const baseApi = createApi({
         try {
           const { data } = await queryFulfilled
           if (data?.result) {
-            // Note: getMe does not return a new token normally, but if it's stored in localStorage we can sync it
-            const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null
+            const { user } = data.result
+            let token = typeof window !== "undefined" ? localStorage.getItem(`accessToken_${user.role}`) : null
+            if (!token && typeof window !== "undefined") {
+              token = localStorage.getItem("accessToken")
+            }
             if (token) {
-              dispatch(setCredentials({ user: data.result.user, token }))
+              dispatch(setCredentials({ user, token }))
             }
           }
         } catch (err) {

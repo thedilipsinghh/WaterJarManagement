@@ -33,6 +33,11 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+app.use((req, _res, next) => {
+  console.log(`[API REQUEST] ${req.method} ${req.url} - IP: ${req.ip}`)
+  next()
+})
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({

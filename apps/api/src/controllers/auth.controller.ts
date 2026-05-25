@@ -122,6 +122,22 @@ export class AuthController {
 
       // Set cookies
       const isProduction = env.NODE_ENV === "production"
+      
+      // Role-specific cookies to support concurrent multi-role sessions
+      res.cookie(`accessToken_${user.role}`, accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+      res.cookie(`refreshToken_${user.role}`, refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      })
+
+      // General fallback cookies
       res.cookie(env.COOKIE_NAME, accessToken, {
         httpOnly: true,
         secure: isProduction,
@@ -199,7 +215,16 @@ export class AuthController {
 
   async refresh(req: Request, res: Response) {
     try {
-      const refreshToken = req.cookies["refreshToken"] || req.body.refreshToken
+      const roleHeader = req.headers["x-user-role"] as string
+      let refreshToken = ""
+
+      if (roleHeader) {
+        refreshToken = req.cookies[`refreshToken_${roleHeader}`]
+      }
+
+      if (!refreshToken) {
+        refreshToken = req.cookies["refreshToken"] || req.body.refreshToken
+      }
 
       if (!refreshToken) {
         return res.status(401).json({ message: "Refresh token not found" })
@@ -220,9 +245,20 @@ export class AuthController {
       const tokenPayload = { id: user.id, email: user.email, role: user.role, name: user.name }
       const accessToken = jwt.sign(tokenPayload, env.JWT_SECRET, this.accessTokenOptions)
 
+      const isProduction = env.NODE_ENV === "production"
+
+      // Set role-specific cookie
+      res.cookie(`accessToken_${user.role}`, accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+
+      // General fallback cookie
       res.cookie(env.COOKIE_NAME, accessToken, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production",
+        secure: isProduction,
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
@@ -241,6 +277,12 @@ export class AuthController {
 
   async logout(req: Request, res: Response) {
     try {
+      const authUser = (req as any).user
+      if (authUser && authUser.role) {
+        res.clearCookie(`accessToken_${authUser.role}`)
+        res.clearCookie(`refreshToken_${authUser.role}`)
+      }
+
       res.clearCookie(env.COOKIE_NAME)
       res.clearCookie("refreshToken")
       res.status(200).json({

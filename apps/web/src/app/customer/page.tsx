@@ -9,6 +9,7 @@ import {
   useGetCustomerBillsQuery,
   useGetCustomerSpendingQuery,
   useRequestStopServiceMutation,
+  usePayBillMutation,
 } from "../../store/api/customer.api"
 import SidebarLayout from "../../components/SidebarLayout"
 import { useToast } from "../../components/Toast"
@@ -32,6 +33,7 @@ export default function CustomerDashboard() {
 
   const [createOrder] = useCreateCustomerOrderMutation()
   const [requestStopService, { isLoading: isStopping }] = useRequestStopServiceMutation()
+  const [payBill, { isLoading: isPaying }] = usePayBillMutation()
 
   // Form state
   const [showAddOrder, setShowAddOrder] = useState(false)
@@ -88,6 +90,15 @@ export default function CustomerDashboard() {
       }, 1000)
     } catch (err: any) {
       showToast(err.data?.message || "Failed to submit request", "error")
+    }
+  }
+
+  const handlePayBill = async (billId: number) => {
+    try {
+      await payBill(billId).unwrap()
+      showToast("Payment completed successfully!", "success")
+    } catch (err: any) {
+      showToast(err.data?.message || "Failed to process payment", "error")
     }
   }
 
@@ -246,6 +257,7 @@ export default function CustomerDashboard() {
                   <th className="px-6 py-4">Total Amount</th>
                   <th className="px-6 py-4">Due Date</th>
                   <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -265,11 +277,22 @@ export default function CustomerDashboard() {
                         {bill.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      {bill.status === "pending" && (
+                        <button
+                          onClick={() => handlePayBill(bill.id)}
+                          disabled={isPaying}
+                          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
+                        >
+                          Pay Now
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {(!billsData?.result || billsData.result.length === 0) && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
                       No invoices found. Outstanding bills will display here.
                     </td>
                   </tr>

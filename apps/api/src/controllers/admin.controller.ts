@@ -10,25 +10,20 @@ export class AdminController {
   // Vendors CRUD
   async listVendors(req: Request, res: Response) {
     try {
-      const result = await db
-        .select({
-          id: vendors.id,
-          userId: vendors.userId,
-          name: users.name,
-          email: users.email,
-          companyName: vendors.companyName,
-          phone: vendors.phone,
-          address: vendors.address,
-          status: users.status,
-          createdAt: vendors.createdAt,
-        })
-        .from(vendors)
-        .innerJoin(users, eq(vendors.userId, users.id))
+      const result = await db.select({
+        id: vendors.id,
+        userId: vendors.userId,
+        name: users.name,
+        email: users.email,
+        companyName: vendors.companyName,
+        phone: vendors.phone,
+        address: vendors.address,
+        status: users.status,
+        createdAt: vendors.createdAt,
+      }).from(vendors).innerJoin(users, eq(vendors.userId, users.id))
 
-      res.status(200).json({
-        message: "Vendors list fetched success",
-        result,
-      })
+      res.status(200).json({ message: "Vendors list fetched success", result, })
+
     } catch (error) {
       console.error(error)
       res.status(500).json({ message: "Unable to fetch vendors" })
