@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       colors: {
         border: "rgb(229, 231, 235)",
+        input: "rgb(229, 231, 235)",
         background: "rgb(255, 255, 255)",
         foreground: "rgb(15, 23, 42)",
         primary: {
@@ -40,6 +41,20 @@ module.exports = {
         lg: "0.5rem",
         md: "0.375rem",
         sm: "0.25rem",
+      },
+      keyframes: {
+        "content-show": {
+          from: { opacity: "0", transform: "translate(-50%, -48%) scale(0.96)" },
+          to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
+        },
+        "overlay-show": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+      },
+      animation: {
+        "content-show": "content-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "overlay-show": "overlay-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
       },
     },
   },

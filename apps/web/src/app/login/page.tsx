@@ -8,6 +8,10 @@ import { z } from "zod"
 import { useLoginMutation } from "../../store/api/baseApi"
 import { useToast } from "../../components/Toast"
 import Link from "next/link"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -68,73 +72,69 @@ export default function LoginPage() {
 
       {/* Main Container */}
       <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8 bg-white p-8 border border-slate-200 rounded-lg shadow-sm">
-          <div>
-            <h2 className="mt-2 text-center text-2xl font-bold tracking-tight text-slate-900">
+        <Card className="w-full max-w-md border-slate-200/80 bg-white shadow-sm">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-center text-2xl font-bold tracking-tight text-slate-900">
               Sign in to WaterJar
-            </h2>
-            <p className="mt-2 text-center text-sm text-slate-500">
+            </CardTitle>
+            <CardDescription className="text-center text-sm text-slate-500">
               Or{" "}
               <Link href="/register" className="font-semibold text-slate-900 hover:underline">
                 register a new account
               </Link>
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
-          {errorMessage && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded text-sm text-center font-medium">
-              {errorMessage}
-            </div>
-          )}
+          <CardContent className="space-y-4">
+            {errorMessage && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded text-sm text-center font-medium">
+                {errorMessage}
+              </div>
+            )}
 
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  disabled={isLoading}
-                  {...register("email")}
-                  className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
-                  placeholder="you@example.com"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
-                )}
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    disabled={isLoading}
+                    {...register("email")}
+                    placeholder="you@example.com"
+                  />
+                  {errors.email && (
+                    <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    disabled={isLoading}
+                    {...register("password")}
+                    placeholder="••••••••"
+                  />
+                  {errors.password && (
+                    <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
+              <div className="pt-2">
+                <Button
+                  type="submit"
                   disabled={isLoading}
-                  {...register("password")}
-                  className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
-                  placeholder="••••••••"
-                />
-                {errors.password && (
-                  <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
-                )}
+                  className="w-full"
+                >
+                  {isLoading ? "Signing in..." : "Sign in"}
+                </Button>
               </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex w-full justify-center rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-50 transition-colors"
-              >
-                {isLoading ? "Signing in..." : "Sign in"}
-              </button>
-            </div>
-          </form>
-        </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Shared Footer */}

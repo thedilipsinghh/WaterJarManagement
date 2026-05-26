@@ -8,6 +8,10 @@ import { z } from "zod"
 import { useRegisterMutation } from "../../store/api/baseApi"
 import { useToast } from "../../components/Toast"
 import Link from "next/link"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card"
+import { Label } from "../../components/ui/label"
+import { Input } from "../../components/ui/input"
+import { Button } from "../../components/ui/button"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -106,213 +110,186 @@ export default function RegisterPage() {
 
       {/* Main Container */}
       <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="w-full max-w-lg space-y-8 bg-white p-8 border border-slate-200 rounded-lg shadow-sm">
-          <div>
-            <h2 className="mt-2 text-center text-2xl font-bold tracking-tight text-slate-900">
+        <Card className="w-full max-w-lg border-slate-200/80 bg-white shadow-sm">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-center text-2xl font-bold tracking-tight text-slate-900">
               Create a new account
-            </h2>
-            <p className="mt-2 text-center text-sm text-slate-500">
+            </CardTitle>
+            <CardDescription className="text-center text-sm text-slate-500">
               Already have an account?{" "}
               <Link href="/login" className="font-semibold text-slate-900 hover:underline">
                 Sign in
               </Link>
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
-          {errorMessage && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded text-sm text-center font-medium">
-              {errorMessage}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="p-3 bg-green-50 border border-green-200 text-green-600 rounded text-sm text-center font-medium">
-              {successMessage}
-            </div>
-          )}
-
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Full Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    {...register("name")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="John Doe"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="name@example.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
-                  )}
-                </div>
+          <CardContent className="space-y-4">
+            {errorMessage && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded text-sm text-center font-medium">
+                {errorMessage}
               </div>
+            )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    {...register("password")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="••••••••"
-                  />
-                  {errors.password && (
-                    <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="role" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    I want to register as
-                  </label>
-                  <select
-                    id="role"
-                    {...register("role")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                  >
-                    <option value="vendor">Water Vendor / Company</option>
-                    <option value="customer">Subscribed Customer</option>
-                  </select>
-                </div>
+            {successMessage && (
+              <div className="p-3 bg-green-50 border border-green-200 text-green-600 rounded text-sm text-center font-medium">
+                {successMessage}
               </div>
+            )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="phone" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Phone Number
-                  </label>
-                  <input
-                    id="phone"
-                    type="text"
-                    {...register("phone")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="+1 (555) 000-0000"
-                  />
-                  {errors.phone && (
-                    <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="address" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Billing Address
-                  </label>
-                  <input
-                    id="address"
-                    type="text"
-                    {...register("address")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="123 Main Street"
-                  />
-                  {errors.address && (
-                    <p className="mt-1 text-xs text-red-500">{errors.address.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Vendor Specific */}
-              {selectedRole === "vendor" && (
-                <div>
-                  <label htmlFor="companyName" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Company / Agency Name
-                  </label>
-                  <input
-                    id="companyName"
-                    type="text"
-                    {...register("companyName")}
-                    className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                    placeholder="Spring Valley Jars Co."
-                  />
-                  {errors.companyName && (
-                    <p className="mt-1 text-xs text-red-500">{errors.companyName.message}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Customer Specific */}
-              {selectedRole === "customer" && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="vendorId" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                        Vendor ID (Assigned Provider)
-                      </label>
-                      <input
-                        id="vendorId"
-                        type="text"
-                        {...register("vendorId")}
-                        className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                        placeholder="e.g. 1"
-                      />
-                      {errors.vendorId && (
-                        <p className="mt-1 text-xs text-red-500">{errors.vendorId.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="monthlyRate" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                        Monthly Rate per Jar (₹)
-                      </label>
-                      <input
-                        id="monthlyRate"
-                        type="number"
-                        {...register("monthlyRate")}
-                        className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                        placeholder="15"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="deliveryAddress" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                      Delivery Address
-                    </label>
-                    <input
-                      id="deliveryAddress"
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
                       type="text"
-                      {...register("deliveryAddress")}
-                      className="block w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
-                      placeholder="Specific delivery gate or instructions"
+                      {...register("name")}
+                      placeholder="John Doe"
                     />
+                    {errors.name && (
+                      <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...register("email")}
+                      placeholder="name@example.com"
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex w-full justify-center rounded bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 disabled:opacity-50 transition-colors"
-              >
-                {isLoading ? "Registering account..." : "Register Now"}
-              </button>
-            </div>
-          </form>
-        </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      {...register("password")}
+                      placeholder="••••••••"
+                    />
+                    {errors.password && (
+                      <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="role">I want to register as</Label>
+                    <select
+                      id="role"
+                      {...register("role")}
+                      className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1.5 text-sm text-slate-900 shadow-xs focus:border-slate-500 focus:ring-1 focus:ring-slate-500"
+                    >
+                      <option value="vendor">Water Vendor / Company</option>
+                      <option value="customer">Subscribed Customer</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="text"
+                      {...register("phone")}
+                      placeholder="+1 (555) 000-0000"
+                    />
+                    {errors.phone && (
+                      <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="address">Billing Address</Label>
+                    <Input
+                      id="address"
+                      type="text"
+                      {...register("address")}
+                      placeholder="123 Main Street"
+                    />
+                    {errors.address && (
+                      <p className="mt-1 text-xs text-red-500">{errors.address.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Vendor Specific */}
+                {selectedRole === "vendor" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="companyName">Company / Agency Name</Label>
+                    <Input
+                      id="companyName"
+                      type="text"
+                      {...register("companyName")}
+                      placeholder="Spring Valley Jars Co."
+                    />
+                    {errors.companyName && (
+                      <p className="mt-1 text-xs text-red-500">{errors.companyName.message}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Customer Specific */}
+                {selectedRole === "customer" && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="vendorId">Vendor ID (Assigned Provider)</Label>
+                        <Input
+                          id="vendorId"
+                          type="text"
+                          {...register("vendorId")}
+                          placeholder="e.g. 1"
+                        />
+                        {errors.vendorId && (
+                          <p className="mt-1 text-xs text-red-500">{errors.vendorId.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="monthlyRate">Monthly Rate per Jar (₹)</Label>
+                        <Input
+                          id="monthlyRate"
+                          type="number"
+                          {...register("monthlyRate")}
+                          placeholder="15"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="deliveryAddress">Delivery Address</Label>
+                      <Input
+                        id="deliveryAddress"
+                        type="text"
+                        {...register("deliveryAddress")}
+                        placeholder="Specific delivery gate or instructions"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  {isLoading ? "Registering account..." : "Register Now"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Shared Footer */}

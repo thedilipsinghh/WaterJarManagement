@@ -16,6 +16,11 @@ import {
 } from "../../store/api/admin.api"
 import SidebarLayout from "../../components/SidebarLayout"
 import { useToast } from "../../components/Toast"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog"
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -32,10 +37,8 @@ export default function AdminDashboard() {
   })
 
   const [createVendor] = useCreateVendorMutation()
-  const [updateVendor] = useUpdateVendorMutation()
   const [deleteVendor] = useDeleteVendorMutation()
   const [createCustomer] = useCreateAdminCustomerMutation()
-  const [updateCustomer] = useUpdateAdminCustomerMutation()
   const [deleteCustomer] = useDeleteAdminCustomerMutation()
   const [toggleBlock] = useToggleUserBlockMutation()
 
@@ -159,40 +162,37 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Vendors Registry</h2>
-              <p className="text-sm text-slate-500">Manage companies and delivery agencies.</p>
+              <h2 className="text-xl font-bold text-slate-900 font-sans">Vendors Registry</h2>
+              <p className="text-sm text-slate-500 font-sans">Manage companies and delivery agencies.</p>
             </div>
-            <button
-              onClick={() => setShowAddVendor(true)}
-              className="rounded bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-slate-800 transition-colors"
-            >
+            <Button onClick={() => setShowAddVendor(true)}>
               Add New Vendor
-            </button>
+            </Button>
           </div>
 
           {/* Vendors Table */}
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Company Name</th>
-                  <th className="px-6 py-4">Representative</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Phone</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Company Name</TableHead>
+                  <TableHead>Representative</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {vendorsData?.result?.map((vendor) => (
-                  <tr key={vendor.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{vendor.id}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{vendor.companyName}</td>
-                    <td className="px-6 py-4">{vendor.name}</td>
-                    <td className="px-6 py-4">{vendor.email}</td>
-                    <td className="px-6 py-4">{vendor.phone || "-"}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={vendor.id}>
+                    <TableCell className="font-mono text-xs">{vendor.id}</TableCell>
+                    <TableCell className="font-medium text-slate-900">{vendor.companyName}</TableCell>
+                    <TableCell>{vendor.name}</TableCell>
+                    <TableCell>{vendor.email}</TableCell>
+                    <TableCell>{vendor.phone || "-"}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         vendor.status === "active" 
                           ? "bg-green-50 text-green-700" 
@@ -200,131 +200,118 @@ export default function AdminDashboard() {
                       }`}>
                         {vendor.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button
+                        variant={vendor.status === "active" ? "destructive" : "default"}
+                        size="sm"
                         onClick={() => handleToggleBlock(vendor.userId, vendor.status)}
-                        className={`rounded px-2.5 py-1 text-xs font-medium border ${
-                          vendor.status === "active"
-                            ? "border-red-200 text-red-600 hover:bg-red-50"
-                            : "border-green-200 text-green-600 hover:bg-green-50"
-                        }`}
                       >
                         {vendor.status === "active" ? "Block" : "Unblock"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDeleteVendor(vendor.id)}
-                        className="rounded border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
                       >
                         Delete
-                      </button>
-                    </td>
-                  </tr>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!vendorsData?.result || vendorsData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={7} className="px-6 py-8 text-center text-slate-400">
                       No vendors found. Seed the database or add a new record.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
-          {/* Add Vendor Modal */}
-          {showAddVendor && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-              <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-6">
-                <h3 className="text-base font-bold text-slate-900 mb-4">Add New Vendor Company</h3>
-                <form onSubmit={handleAddVendorSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Rep Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={vendorForm.name}
-                        onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
-                      <input
-                        type="email"
-                        required
-                        value={vendorForm.email}
-                        onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="rep@agency.com"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Password</label>
-                    <input
-                      type="password"
-                      required
-                      value={vendorForm.password}
-                      onChange={(e) => setVendorForm({ ...vendorForm, password: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="••••••••"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Company Name</label>
-                    <input
+          {/* Add Vendor Dialog Modal */}
+          <Dialog open={showAddVendor} onOpenChange={setShowAddVendor}>
+            <DialogContent className="sm:max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Add New Vendor Company</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddVendorSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Rep Name</Label>
+                    <Input
                       type="text"
                       required
-                      value={vendorForm.companyName}
-                      onChange={(e) => setVendorForm({ ...vendorForm, companyName: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="Aquaflow Agency"
+                      value={vendorForm.name}
+                      onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
+                      placeholder="John Doe"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Phone</label>
-                      <input
-                        type="text"
-                        value={vendorForm.phone}
-                        onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="+1 555-0199"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Address</label>
-                      <input
-                        type="text"
-                        value={vendorForm.address}
-                        onChange={(e) => setVendorForm({ ...vendorForm, address: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="10 Main St"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      required
+                      value={vendorForm.email}
+                      onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
+                      placeholder="rep@agency.com"
+                    />
                   </div>
-                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddVendor(false)}
-                      className="rounded border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                    >
-                      Save Vendor
-                    </button>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Password</Label>
+                  <Input
+                    type="password"
+                    required
+                    value={vendorForm.password}
+                    onChange={(e) => setVendorForm({ ...vendorForm, password: e.target.value })}
+                    placeholder="••••••••"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Company Name</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={vendorForm.companyName}
+                    onChange={(e) => setVendorForm({ ...vendorForm, companyName: e.target.value })}
+                    placeholder="Aquaflow Agency"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Phone</Label>
+                    <Input
+                      type="text"
+                      value={vendorForm.phone}
+                      onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
+                      placeholder="+1 555-0199"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
+                  <div className="space-y-1.5">
+                    <Label>Address</Label>
+                    <Input
+                      type="text"
+                      value={vendorForm.address}
+                      onChange={(e) => setVendorForm({ ...vendorForm, address: e.target.value })}
+                      placeholder="10 Main St"
+                    />
+                  </div>
+                </div>
+                <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddVendor(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save Vendor</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
 
@@ -332,43 +319,40 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Customers Registry</h2>
-              <p className="text-sm text-slate-500">Track and link clients to delivery companies.</p>
+              <h2 className="text-xl font-bold text-slate-900 font-sans">Customers Registry</h2>
+              <p className="text-sm text-slate-500 font-sans">Track and link clients to delivery companies.</p>
             </div>
-            <button
-              onClick={() => setShowAddCustomer(true)}
-              className="rounded bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-slate-800 transition-colors"
-            >
+            <Button onClick={() => setShowAddCustomer(true)}>
               Add New Customer
-            </button>
+            </Button>
           </div>
 
           {/* Customers Table */}
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Customer Name</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Assigned Vendor</th>
-                  <th className="px-6 py-4">Rate (₹)</th>
-                  <th className="px-6 py-4">Delivery Address</th>
-                  <th className="px-6 py-4">Service</th>
-                  <th className="px-6 py-4">Account</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Assigned Vendor</TableHead>
+                  <TableHead>Rate (₹)</TableHead>
+                  <TableHead>Delivery Address</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Account</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {customersData?.result?.map((cust) => (
-                  <tr key={cust.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{cust.id}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{cust.name}</td>
-                    <td className="px-6 py-4">{cust.email}</td>
-                    <td className="px-6 py-4 text-slate-500 font-medium">{cust.vendorCompanyName}</td>
-                    <td className="px-6 py-4">₹{cust.monthlyRate}/jar</td>
-                    <td className="px-6 py-4 truncate max-w-xs">{cust.deliveryAddress}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={cust.id}>
+                    <TableCell className="font-mono text-xs">{cust.id}</TableCell>
+                    <TableCell className="font-medium text-slate-900">{cust.name}</TableCell>
+                    <TableCell>{cust.email}</TableCell>
+                    <TableCell className="text-slate-500 font-medium">{cust.vendorCompanyName}</TableCell>
+                    <TableCell>₹{cust.monthlyRate}/jar</TableCell>
+                    <TableCell className="max-w-xs truncate">{cust.deliveryAddress}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         cust.serviceStatus === "active" 
                           ? "bg-green-50 text-green-700" 
@@ -376,8 +360,8 @@ export default function AdminDashboard() {
                       }`}>
                         {cust.serviceStatus}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         cust.status === "active" 
                           ? "bg-green-50 text-green-700" 
@@ -385,153 +369,138 @@ export default function AdminDashboard() {
                       }`}>
                         {cust.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button
+                        variant={cust.status === "active" ? "destructive" : "default"}
+                        size="sm"
                         onClick={() => handleToggleBlock(cust.userId, cust.status)}
-                        className={`rounded px-2.5 py-1 text-xs font-medium border ${
-                          cust.status === "active"
-                            ? "border-red-200 text-red-600 hover:bg-red-50"
-                            : "border-green-200 text-green-600 hover:bg-green-50"
-                        }`}
                       >
                         {cust.status === "active" ? "Block" : "Unblock"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDeleteCustomer(cust.id)}
-                        className="rounded border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
                       >
                         Delete
-                      </button>
-                    </td>
-                  </tr>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!customersData?.result || customersData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={9} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={9} className="px-6 py-8 text-center text-slate-400">
                       No customers found. Onboard new customer profiles.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
-          {/* Add Customer Modal */}
-          {showAddCustomer && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-              <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-6">
-                <h3 className="text-base font-bold text-slate-900 mb-4">Add New Customer</h3>
-                <form onSubmit={handleAddCustomerSubmit} className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={customerForm.name}
-                        onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="John Smith"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
-                      <input
-                        type="email"
-                        required
-                        value={customerForm.email}
-                        onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Password</label>
-                      <input
-                        type="password"
-                        required
-                        value={customerForm.password}
-                        onChange={(e) => setCustomerForm({ ...customerForm, password: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Vendor ID</label>
-                      <input
-                        type="text"
-                        required
-                        value={customerForm.vendorId}
-                        onChange={(e) => setCustomerForm({ ...customerForm, vendorId: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="e.g. 1"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Phone</label>
-                      <input
-                        type="text"
-                        value={customerForm.phone}
-                        onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="+1 555-0155"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Rate per Jar (₹)</label>
-                      <input
-                        type="number"
-                        value={customerForm.monthlyRate}
-                        onChange={(e) => setCustomerForm({ ...customerForm, monthlyRate: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="15"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Billing Address</label>
-                    <input
+          {/* Add Customer Dialog Modal */}
+          <Dialog open={showAddCustomer} onOpenChange={setShowAddCustomer}>
+            <DialogContent className="sm:max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Add New Customer</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddCustomerSubmit} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Full Name</Label>
+                    <Input
                       type="text"
-                      value={customerForm.address}
-                      onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="Apartment 4B, Blue Towers"
+                      required
+                      value={customerForm.name}
+                      onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
+                      placeholder="John Smith"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Delivery Address</label>
-                    <input
-                      type="text"
-                      value={customerForm.deliveryAddress}
-                      onChange={(e) => setCustomerForm({ ...customerForm, deliveryAddress: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="Apartment 4B, Front Gate Dropoff"
+                  <div className="space-y-1.5">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      required
+                      value={customerForm.email}
+                      onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
+                      placeholder="john@example.com"
                     />
                   </div>
-                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCustomer(false)}
-                      className="rounded border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                    >
-                      Save Customer
-                    </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Password</Label>
+                    <Input
+                      type="password"
+                      required
+                      value={customerForm.password}
+                      onChange={(e) => setCustomerForm({ ...customerForm, password: e.target.value })}
+                      placeholder="••••••••"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
+                  <div className="space-y-1.5">
+                    <Label>Vendor ID</Label>
+                    <Input
+                      type="text"
+                      required
+                      value={customerForm.vendorId}
+                      onChange={(e) => setCustomerForm({ ...customerForm, vendorId: e.target.value })}
+                      placeholder="e.g. 1"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Phone</Label>
+                    <Input
+                      type="text"
+                      value={customerForm.phone}
+                      onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
+                      placeholder="+1 555-0155"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Rate per Jar (₹)</Label>
+                    <Input
+                      type="number"
+                      value={customerForm.monthlyRate}
+                      onChange={(e) => setCustomerForm({ ...customerForm, monthlyRate: e.target.value })}
+                      placeholder="15"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Billing Address</Label>
+                  <Input
+                    type="text"
+                    value={customerForm.address}
+                    onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })}
+                    placeholder="Apartment 4B, Blue Towers"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Delivery Address</Label>
+                  <Input
+                    type="text"
+                    value={customerForm.deliveryAddress}
+                    onChange={(e) => setCustomerForm({ ...customerForm, deliveryAddress: e.target.value })}
+                    placeholder="Apartment 4B, Front Gate Dropoff"
+                  />
+                </div>
+                <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddCustomer(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save Customer</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </SidebarLayout>

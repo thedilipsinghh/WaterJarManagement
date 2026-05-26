@@ -13,6 +13,11 @@ import {
 } from "../../store/api/customer.api"
 import SidebarLayout from "../../components/SidebarLayout"
 import { useToast } from "../../components/Toast"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog"
 
 export default function CustomerDashboard() {
   const router = useRouter()
@@ -110,7 +115,7 @@ export default function CustomerDashboard() {
       setActiveTab={setActiveTab}
     >
       {/* Top Banner Status */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 flex items-center justify-between shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 flex items-center justify-between shadow-xs">
         <div className="space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Subscription Status</span>
           <div className="flex items-center gap-2">
@@ -122,13 +127,14 @@ export default function CustomerDashboard() {
           </div>
         </div>
         {serviceStatus === "active" && (
-          <button
+          <Button
             onClick={handleStopService}
             disabled={isStopping}
-            className="rounded border border-red-200 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+            variant="destructive"
+            size="sm"
           >
             Request Stop Service
-          </button>
+          </Button>
         )}
       </div>
 
@@ -136,36 +142,33 @@ export default function CustomerDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Delivery Orders History</h2>
+              <h2 className="text-xl font-bold text-slate-900 font-sans">Delivery Orders History</h2>
               <p className="text-sm text-slate-500 font-sans">Track your delivery scheduling and status.</p>
             </div>
             {serviceStatus === "active" && (
-              <button
-                onClick={() => setShowAddOrder(true)}
-                className="rounded bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-slate-800 transition-colors"
-              >
+              <Button onClick={() => setShowAddOrder(true)}>
                 Request Delivery
-              </button>
+              </Button>
             )}
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">Order ID</th>
-                  <th className="px-6 py-4">Quantity</th>
-                  <th className="px-6 py-4">Delivery Date</th>
-                  <th className="px-6 py-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Delivery Date</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {ordersData?.result?.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{order.id}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-900">{order.quantity} jars</td>
-                    <td className="px-6 py-4">{new Date(order.deliveryDate).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={order.id}>
+                    <TableCell className="font-mono text-xs">{order.id}</TableCell>
+                    <TableCell className="font-semibold text-slate-900">{order.quantity} jars</TableCell>
+                    <TableCell>{new Date(order.deliveryDate).toLocaleDateString()}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         order.status === "delivered" 
                           ? "bg-green-50 text-green-700" 
@@ -175,100 +178,93 @@ export default function CustomerDashboard() {
                       }`}>
                         {order.status}
                       </span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!ordersData?.result || ordersData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={4} className="px-6 py-8 text-center text-slate-400">
                       No delivery orders found. Request a jar delivery to begin.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
-          {/* Add Order Modal */}
-          {showAddOrder && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-              <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-6">
-                <h3 className="text-base font-bold text-slate-900 mb-4">Request Jar Delivery</h3>
-                <form onSubmit={handleAddOrderSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Quantity (Jars count)</label>
-                    <input
-                      type="number"
-                      required
-                      min="1"
-                      value={orderForm.quantity}
-                      onChange={(e) => setOrderForm({ ...orderForm, quantity: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="e.g. 2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Preferred Delivery Date</label>
-                    <input
-                      type="text"
-                      required
-                      value={orderForm.deliveryDate}
-                      onChange={(e) => setOrderForm({ ...orderForm, deliveryDate: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="YYYY-MM-DD"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddOrder(false)}
-                      className="rounded border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                    >
-                      Submit Order
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          {/* Add Order Dialog Modal */}
+          <Dialog open={showAddOrder} onOpenChange={setShowAddOrder}>
+            <DialogContent className="sm:max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Request Jar Delivery</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddOrderSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Quantity (Jars count)</Label>
+                  <Input
+                    type="number"
+                    required
+                    min="1"
+                    value={orderForm.quantity}
+                    onChange={(e) => setOrderForm({ ...orderForm, quantity: e.target.value })}
+                    placeholder="e.g. 2"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Preferred Delivery Date</Label>
+                  <Input
+                    type="text"
+                    required
+                    value={orderForm.deliveryDate}
+                    onChange={(e) => setOrderForm({ ...orderForm, deliveryDate: e.target.value })}
+                    placeholder="YYYY-MM-DD"
+                  />
+                </div>
+                <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddOrder(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Submit Order</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
 
       {activeTab === "bills" && (
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-bold text-slate-900">Invoices & Bills</h2>
+            <h2 className="text-xl font-bold text-slate-900 font-sans">Invoices & Bills</h2>
             <p className="text-sm text-slate-500 font-sans">View your invoice amounts and outstanding balances.</p>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">Invoice ID</th>
-                  <th className="px-6 py-4">Month</th>
-                  <th className="px-6 py-4">Jars Quantity</th>
-                  <th className="px-6 py-4">Total Amount</th>
-                  <th className="px-6 py-4">Due Date</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invoice ID</TableHead>
+                  <TableHead>Month</TableHead>
+                  <TableHead>Jars Quantity</TableHead>
+                  <TableHead>Total Amount</TableHead>
+                  <TableHead>Due Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {billsData?.result?.map((bill) => (
-                  <tr key={bill.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{bill.id}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-900">{bill.month}</td>
-                    <td className="px-6 py-4">{bill.jarQuantity} jars</td>
-                    <td className="px-6 py-4 font-semibold text-slate-950">₹{bill.amount}</td>
-                    <td className="px-6 py-4">{new Date(bill.dueDate).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={bill.id}>
+                    <TableCell className="font-mono text-xs">{bill.id}</TableCell>
+                    <TableCell className="font-semibold text-slate-900">{bill.month}</TableCell>
+                    <TableCell>{bill.jarQuantity} jars</TableCell>
+                    <TableCell className="font-semibold text-slate-950">₹{bill.amount}</TableCell>
+                    <TableCell>{new Date(bill.dueDate).toLocaleDateString()}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         bill.status === "paid" 
                           ? "bg-green-50 text-green-700" 
@@ -276,29 +272,29 @@ export default function CustomerDashboard() {
                       }`}>
                         {bill.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       {bill.status === "pending" && (
-                        <button
+                        <Button
                           onClick={() => handlePayBill(bill.id)}
                           disabled={isPaying}
-                          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
+                          size="sm"
                         >
                           Pay Now
-                        </button>
+                        </Button>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!billsData?.result || billsData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={7} className="px-6 py-8 text-center text-slate-400">
                       No invoices found. Outstanding bills will display here.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}
@@ -306,37 +302,37 @@ export default function CustomerDashboard() {
       {activeTab === "spending" && (
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-bold text-slate-900">Spending Analysis</h2>
+            <h2 className="text-xl font-bold text-slate-900 font-sans">Spending Analysis</h2>
             <p className="text-sm text-slate-500 font-sans">Monthly aggregation of jar consumption and payments.</p>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm p-6">
-            <h3 className="text-sm font-bold text-slate-800 mb-4">Consumption History</h3>
-            <table className="w-full text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold text-slate-500 border-b">
-                <tr>
-                  <th className="px-4 py-2">Billing Month</th>
-                  <th className="px-4 py-2">Jars Consumed</th>
-                  <th className="px-4 py-2">Total Amount Spent</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <h3 className="text-sm font-bold text-slate-800 mb-4 font-sans">Consumption History</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="px-4">Billing Month</TableHead>
+                  <TableHead className="px-4">Jars Consumed</TableHead>
+                  <TableHead className="px-4">Total Amount Spent</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {spendingData?.result?.map((s, i) => (
-                  <tr key={i}>
-                    <td className="px-4 py-3 font-semibold text-slate-700">{s.month}</td>
-                    <td className="px-4 py-3 font-mono">{s.jarQuantity} Jars</td>
-                    <td className="px-4 py-3 font-bold text-slate-900">₹{s.totalSpent}</td>
-                  </tr>
+                  <TableRow key={i}>
+                    <TableCell className="px-4 font-semibold text-slate-700">{s.month}</TableCell>
+                    <TableCell className="px-4 font-mono">{s.jarQuantity} Jars</TableCell>
+                    <TableCell className="px-4 font-bold text-slate-900">₹{s.totalSpent}</TableCell>
+                  </TableRow>
                 ))}
                 {(!spendingData?.result || spendingData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={3} className="px-4 py-6 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={3} className="px-4 py-6 text-center text-slate-400">
                       No spending records found. Consume and pay bills to generate report.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

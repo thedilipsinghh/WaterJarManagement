@@ -48,38 +48,35 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
           const colors = {
             success: {
-              border: "border-green-300",
-              bg: "bg-white",
-              text: "text-slate-800",
-              icon: "text-green-600",
+              border: "border-slate-200 bg-white text-slate-900",
+              icon: "text-emerald-500",
+              close: "text-slate-400 hover:text-slate-900",
             },
             error: {
-              border: "border-red-300",
-              bg: "bg-white",
-              text: "text-slate-800",
-              icon: "text-red-600",
+              border: "border-destructive bg-destructive text-destructive-foreground",
+              icon: "text-white",
+              close: "text-white/80 hover:text-white",
             },
             info: {
-              border: "border-slate-300",
-              bg: "bg-white",
-              text: "text-slate-800",
-              icon: "text-slate-600",
+              border: "border-slate-200 bg-white text-slate-900",
+              icon: "text-blue-500",
+              close: "text-slate-400 hover:text-slate-900",
             },
           }[toast.type]
 
           return (
             <div
               key={toast.id}
-              className={`pointer-events-auto flex items-start gap-3 p-4 rounded bg-white border ${colors.border} shadow-md transition-all duration-300 transform translate-y-0`}
+              className={`pointer-events-auto flex items-center justify-between gap-3 p-3.5 rounded-lg border ${colors.border} shadow-md transition-all duration-300 transform translate-y-0`}
               role="alert"
             >
-              <Icon size={18} className={`${colors.icon} shrink-0 mt-0.5`} />
-              <div className="flex-1">
-                <p className={`text-xs font-semibold ${colors.text}`}>{toast.message}</p>
+              <div className="flex items-center gap-2.5">
+                <Icon size={16} className={`${colors.icon} shrink-0`} />
+                <p className="text-xs font-semibold">{toast.message}</p>
               </div>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="text-slate-400 hover:text-slate-600 shrink-0"
+                className={`${colors.close} transition-colors shrink-0`}
               >
                 <X size={14} />
               </button>

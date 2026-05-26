@@ -18,6 +18,12 @@ import {
 } from "../../store/api/vendor.api"
 import SidebarLayout from "../../components/SidebarLayout"
 import { useToast } from "../../components/Toast"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../../components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog"
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card"
 
 export default function VendorDashboard() {
   const router = useRouter()
@@ -182,30 +188,46 @@ export default function VendorDashboard() {
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
             <h2 className="text-xl font-bold text-slate-900 font-sans">Business Dashboard</h2>
-            <p className="text-sm text-slate-500">Summary metrics for your delivery route.</p>
+            <p className="text-sm text-slate-500 font-sans">Summary metrics for your delivery route.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Metric 1 */}
-            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Customers</span>
-              <p className="text-2xl font-semibold text-slate-900 mt-1">{statsData?.result?.totalCustomers || 0}</p>
-            </div>
+            <Card className="border-slate-200 bg-white">
+              <CardHeader className="p-5 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Customers</span>
+              </CardHeader>
+              <CardContent className="p-5 pt-0">
+                <p className="text-2xl font-semibold text-slate-900">{statsData?.result?.totalCustomers || 0}</p>
+              </CardContent>
+            </Card>
             {/* Metric 2 */}
-            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Active Subscriptions</span>
-              <p className="text-2xl font-semibold text-slate-900 mt-1">{statsData?.result?.activeCustomers || 0}</p>
-            </div>
+            <Card className="border-slate-200 bg-white">
+              <CardHeader className="p-5 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Active Subscriptions</span>
+              </CardHeader>
+              <CardContent className="p-5 pt-0">
+                <p className="text-2xl font-semibold text-slate-900">{statsData?.result?.activeCustomers || 0}</p>
+              </CardContent>
+            </Card>
             {/* Metric 3 */}
-            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Orders</span>
-              <p className="text-2xl font-semibold text-slate-900 mt-1">{statsData?.result?.totalPendingOrders || 0}</p>
-            </div>
+            <Card className="border-slate-200 bg-white">
+              <CardHeader className="p-5 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Orders</span>
+              </CardHeader>
+              <CardContent className="p-5 pt-0">
+                <p className="text-2xl font-semibold text-slate-900">{statsData?.result?.totalPendingOrders || 0}</p>
+              </CardContent>
+            </Card>
             {/* Metric 4 */}
-            <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Revenue (Paid Bills)</span>
-              <p className="text-2xl font-semibold text-slate-950 mt-1">₹{statsData?.result?.totalRevenue || 0}</p>
-            </div>
+            <Card className="border-slate-200 bg-white">
+              <CardHeader className="p-5 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Revenue (Paid Bills)</span>
+              </CardHeader>
+              <CardContent className="p-5 pt-0">
+                <p className="text-2xl font-semibold text-slate-950">₹{statsData?.result?.totalRevenue || 0}</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       )}
@@ -214,33 +236,33 @@ export default function VendorDashboard() {
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
             <h2 className="text-xl font-bold text-slate-900 font-sans">Delivery Requests</h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 font-sans font-sans">
               Manage incoming water jar delivery requests from your customers.
             </p>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">Customer Name</th>
-                  <th className="px-6 py-4">Phone</th>
-                  <th className="px-6 py-4">Delivery Address</th>
-                  <th className="px-6 py-4">Quantity</th>
-                  <th className="px-6 py-4">Delivery Date</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Delivery Address</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Delivery Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
               <tbody className="divide-y divide-slate-100">
                 {ordersData?.result?.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-medium text-slate-900">{order.customerName}</td>
-                    <td className="px-6 py-4">{order.phone || "-"}</td>
-                    <td className="px-6 py-4 max-w-xs truncate">{order.deliveryAddress}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-900">{order.quantity} jars</td>
-                    <td className="px-6 py-4">{new Date(order.deliveryDate).toLocaleDateString()}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={order.id}>
+                    <TableCell className="font-medium text-slate-900">{order.customerName}</TableCell>
+                    <TableCell>{order.phone || "-"}</TableCell>
+                    <TableCell className="max-w-xs truncate">{order.deliveryAddress}</TableCell>
+                    <TableCell className="font-semibold text-slate-900">{order.quantity} jars</TableCell>
+                    <TableCell>{new Date(order.deliveryDate).toLocaleDateString()}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         order.status === "delivered" 
                           ? "bg-green-50 text-green-700" 
@@ -250,29 +272,29 @@ export default function VendorDashboard() {
                       }`}>
                         {order.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       {order.status === "pending" && (
-                        <button
+                        <Button
                           onClick={() => handleDeliverOrder(order.id)}
                           disabled={isDelivering}
-                          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-sm"
+                          size="sm"
                         >
                           Deliver
-                        </button>
+                        </Button>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!ordersData?.result || ordersData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={7} className="px-6 py-8 text-center text-slate-400">
                       No delivery requests found.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
         </div>
       )}
@@ -281,40 +303,37 @@ export default function VendorDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">My Subscribed Customers</h2>
-              <p className="text-sm text-slate-500">Manage client profiles, service states, and invoice alerts.</p>
+              <h2 className="text-xl font-bold text-slate-900 font-sans">My Subscribed Customers</h2>
+              <p className="text-sm text-slate-500 font-sans">Manage client profiles, service states, and invoice alerts.</p>
             </div>
-            <button
-              onClick={() => setShowAddCustomer(true)}
-              className="rounded bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-slate-800 transition-colors"
-            >
+            <Button onClick={() => setShowAddCustomer(true)}>
               Onboard Customer
-            </button>
+            </Button>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Phone</th>
-                  <th className="px-6 py-4">Delivery Address</th>
-                  <th className="px-6 py-4">Rate (₹)</th>
-                  <th className="px-6 py-4">Service Status</th>
-                  <th className="px-6 py-4">Account Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Delivery Address</TableHead>
+                  <TableHead>Rate (₹)</TableHead>
+                  <TableHead>Service Status</TableHead>
+                  <TableHead>Account Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {customersData?.result?.map((cust) => (
-                  <tr key={cust.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{cust.id}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{cust.name}</td>
-                    <td className="px-6 py-4">{cust.phone || "-"}</td>
-                    <td className="px-6 py-4 truncate max-w-xs">{cust.deliveryAddress}</td>
-                    <td className="px-6 py-4">₹{cust.monthlyRate}/jar</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={cust.id}>
+                    <TableCell className="font-mono text-xs">{cust.id}</TableCell>
+                    <TableCell className="font-medium text-slate-900">{cust.name}</TableCell>
+                    <TableCell>{cust.phone || "-"}</TableCell>
+                    <TableCell className="max-w-xs truncate">{cust.deliveryAddress}</TableCell>
+                    <TableCell>₹{cust.monthlyRate}/jar</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         cust.serviceStatus === "active" 
                           ? "bg-green-50 text-green-700" 
@@ -322,8 +341,8 @@ export default function VendorDashboard() {
                       }`}>
                         {cust.serviceStatus}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         cust.status === "active" 
                           ? "bg-green-50 text-green-700" 
@@ -331,267 +350,246 @@ export default function VendorDashboard() {
                       }`}>
                         {cust.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button
                         onClick={() => setShowSendBill(cust.id)}
-                        className="rounded border border-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        variant="outline"
+                        size="sm"
                       >
                         Bill
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleToggleService(cust.id, cust.serviceStatus)}
-                        className={`rounded px-2 py-1 text-xs font-medium border ${
-                          cust.serviceStatus === "active"
-                            ? "border-orange-200 text-orange-600 hover:bg-orange-50"
-                            : "border-green-200 text-green-600 hover:bg-green-50"
-                        }`}
+                        variant={cust.serviceStatus === "active" ? "destructive" : "default"}
+                        size="sm"
                       >
                         {cust.serviceStatus === "active" ? "Suspend" : "Resume"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleToggleStatus(cust.id, cust.status)}
-                        className="rounded border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                        variant="outline"
+                        size="sm"
                       >
                         {cust.status === "active" ? "Block" : "Unblock"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleDeleteCustomer(cust.id)}
-                        className="rounded border border-slate-200 px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-50"
+                        variant="outline"
+                        size="sm"
                       >
                         Delete
-                      </button>
-                    </td>
-                  </tr>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!customersData?.result || customersData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={8} className="px-6 py-8 text-center text-slate-400">
                       No customers found. Click onboarding to add customers.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
-          {/* Add Customer Modal */}
-          {showAddCustomer && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-              <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-6">
-                <h3 className="text-base font-bold text-slate-900 mb-4">Add Customer Profile</h3>
-                <form onSubmit={handleAddCustomerSubmit} className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={customerForm.name}
-                        onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="John Smith"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
-                      <input
-                        type="email"
-                        required
-                        value={customerForm.email}
-                        onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Password</label>
-                      <input
-                        type="password"
-                        required
-                        value={customerForm.password}
-                        onChange={(e) => setCustomerForm({ ...customerForm, password: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Phone</label>
-                      <input
-                        type="text"
-                        value={customerForm.phone}
-                        onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="+1 555-0155"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Rate per Jar (₹)</label>
-                      <input
-                        type="number"
-                        value={customerForm.monthlyRate}
-                        onChange={(e) => setCustomerForm({ ...customerForm, monthlyRate: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="15"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Billing Address</label>
-                      <input
-                        type="text"
-                        value={customerForm.address}
-                        onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="Suite 4B"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Delivery Address</label>
-                    <input
+          {/* Add Customer Dialog Modal */}
+          <Dialog open={showAddCustomer} onOpenChange={setShowAddCustomer}>
+            <DialogContent className="sm:max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Add Customer Profile</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddCustomerSubmit} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Full Name</Label>
+                    <Input
                       type="text"
-                      value={customerForm.deliveryAddress}
-                      onChange={(e) => setCustomerForm({ ...customerForm, deliveryAddress: e.target.value })}
-                      className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                      placeholder="Front Porch Gate"
+                      required
+                      value={customerForm.name}
+                      onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
+                      placeholder="John Smith"
                     />
                   </div>
-                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCustomer(false)}
-                      className="rounded border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                    >
-                      Save Customer
-                    </button>
+                  <div className="space-y-1.5">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      required
+                      value={customerForm.email}
+                      onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
+                      placeholder="john@example.com"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Password</Label>
+                    <Input
+                      type="password"
+                      required
+                      value={customerForm.password}
+                      onChange={(e) => setCustomerForm({ ...customerForm, password: e.target.value })}
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phone</Label>
+                    <Input
+                      type="text"
+                      value={customerForm.phone}
+                      onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
+                      placeholder="+1 555-0155"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Rate per Jar (₹)</Label>
+                    <Input
+                      type="number"
+                      value={customerForm.monthlyRate}
+                      onChange={(e) => setCustomerForm({ ...customerForm, monthlyRate: e.target.value })}
+                      placeholder="15"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Billing Address</Label>
+                    <Input
+                      type="text"
+                      value={customerForm.address}
+                      onChange={(e) => setCustomerForm({ ...customerForm, address: e.target.value })}
+                      placeholder="Suite 4B"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Delivery Address</Label>
+                  <Input
+                    type="text"
+                    value={customerForm.deliveryAddress}
+                    onChange={(e) => setCustomerForm({ ...customerForm, deliveryAddress: e.target.value })}
+                    placeholder="Front Porch Gate"
+                  />
+                </div>
+                <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddCustomer(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save Customer</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
 
-          {/* Send Bill Modal */}
-          {showSendBill && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-              <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-6">
-                <h3 className="text-base font-bold text-slate-900 mb-4">Generate Monthly Billing Invoice</h3>
-                <form onSubmit={handleSendBillSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Billing Month</label>
-                      <input
-                        type="text"
-                        required
-                        value={billForm.month}
-                        onChange={(e) => setBillForm({ ...billForm, month: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="YYYY-MM"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Due Date</label>
-                      <input
-                        type="text"
-                        required
-                        value={billForm.dueDate}
-                        onChange={(e) => setBillForm({ ...billForm, dueDate: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="YYYY-MM-DD"
-                      />
-                    </div>
+          {/* Send Bill Dialog Modal */}
+          <Dialog open={showSendBill !== null} onOpenChange={(open) => !open && setShowSendBill(null)}>
+            <DialogContent className="sm:max-w-md bg-white">
+              <DialogHeader>
+                <DialogTitle>Generate Monthly Billing Invoice</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSendBillSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Billing Month</Label>
+                    <Input
+                      type="text"
+                      required
+                      value={billForm.month}
+                      onChange={(e) => setBillForm({ ...billForm, month: e.target.value })}
+                      placeholder="YYYY-MM"
+                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Delivered Jars Qty</label>
-                      <input
-                        type="number"
-                        required
-                        value={billForm.jarQuantity}
-                        onChange={(e) => {
-                          const qty = Number(e.target.value)
-                          const rate = Number(customersData?.result?.find(c => c.id === showSendBill)?.monthlyRate || 15)
-                          setBillForm({ 
-                            ...billForm, 
-                            jarQuantity: e.target.value,
-                            amount: String(qty * rate)
-                          })
-                        }}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="e.g. 10"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Total Bill Amount (₹)</label>
-                      <input
-                        type="number"
-                        required
-                        value={billForm.amount}
-                        onChange={(e) => setBillForm({ ...billForm, amount: e.target.value })}
-                        className="w-full rounded border border-slate-200 px-2.5 py-1.5 text-xs focus:border-slate-500"
-                        placeholder="150"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label>Due Date</Label>
+                    <Input
+                      type="text"
+                      required
+                      value={billForm.dueDate}
+                      onChange={(e) => setBillForm({ ...billForm, dueDate: e.target.value })}
+                      placeholder="YYYY-MM-DD"
+                    />
                   </div>
-                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setShowSendBill(null)}
-                      className="rounded border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
-                    >
-                      Send & Register Bill
-                    </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Delivered Jars Qty</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={billForm.jarQuantity}
+                      onChange={(e) => {
+                        const qty = Number(e.target.value)
+                        const rate = Number(customersData?.result?.find(c => c.id === showSendBill)?.monthlyRate || 15)
+                        setBillForm({ 
+                          ...billForm, 
+                          jarQuantity: e.target.value,
+                          amount: String(qty * rate)
+                        })
+                      }}
+                      placeholder="e.g. 10"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
+                  <div className="space-y-1.5">
+                    <Label>Total Bill Amount (₹)</Label>
+                    <Input
+                      type="number"
+                      required
+                      value={billForm.amount}
+                      onChange={(e) => setBillForm({ ...billForm, amount: e.target.value })}
+                      placeholder="150"
+                    />
+                  </div>
+                </div>
+                <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowSendBill(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Send & Register Bill</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
 
       {activeTab === "bills" && (
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-bold text-slate-900">Billing Log & History</h2>
+            <h2 className="text-xl font-bold text-slate-900 font-sans">Billing Log & History</h2>
             <p className="text-sm text-slate-500 font-sans">Historic record of all registered client bills.</p>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4">Bill ID</th>
-                  <th className="px-6 py-4">Customer Name</th>
-                  <th className="px-6 py-4">Month</th>
-                  <th className="px-6 py-4">Jars Count</th>
-                  <th className="px-6 py-4">Amount Due</th>
-                  <th className="px-6 py-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Bill ID</TableHead>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Month</TableHead>
+                  <TableHead>Jars Count</TableHead>
+                  <TableHead>Amount Due</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {reportsData?.result?.map((bill) => (
-                  <tr key={bill.id} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-mono text-xs">{bill.id}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{bill.customerName}</td>
-                    <td className="px-6 py-4">{bill.month}</td>
-                    <td className="px-6 py-4">{bill.jarQuantity} jars</td>
-                    <td className="px-6 py-4 font-medium text-slate-950">₹{bill.amount}</td>
-                    <td className="px-6 py-4">
+                  <TableRow key={bill.id}>
+                    <TableCell className="font-mono text-xs">{bill.id}</TableCell>
+                    <TableCell className="font-medium text-slate-900">{bill.customerName}</TableCell>
+                    <TableCell>{bill.month}</TableCell>
+                    <TableCell>{bill.jarQuantity} jars</TableCell>
+                    <TableCell className="font-medium text-slate-950">₹{bill.amount}</TableCell>
+                    <TableCell>
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                         bill.status === "paid" 
                           ? "bg-green-50 text-green-700" 
@@ -599,18 +597,18 @@ export default function VendorDashboard() {
                       }`}>
                         {bill.status}
                       </span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
                 {(!reportsData?.result || reportsData.result.length === 0) && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
+                  <TableRow>
+                    <TableCell colSpan={6} className="px-6 py-8 text-center text-slate-400">
                       No bills found. Create a bill from the customer menu first.
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}
@@ -618,36 +616,36 @@ export default function VendorDashboard() {
       {activeTab === "reports" && (
         <div className="space-y-6">
           <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-bold text-slate-900">Reports & Analytics</h2>
-            <p className="text-sm text-slate-500">Monthly aggregate reports of jar volume usage.</p>
+            <h2 className="text-xl font-bold text-slate-900 font-sans">Reports & Analytics</h2>
+            <p className="text-sm text-slate-500 font-sans font-sans">Monthly aggregate reports of jar volume usage.</p>
           </div>
 
           <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm p-6 space-y-4">
-            <h3 className="text-sm font-bold text-slate-800">Delivered Volume Aggregation</h3>
+            <h3 className="text-sm font-bold text-slate-800 font-sans">Delivered Volume Aggregation</h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 text-xs font-semibold text-slate-500 border-b">
-                  <tr>
-                    <th className="px-4 py-2">Billing Calendar Month</th>
-                    <th className="px-4 py-2">Total Jars Count Delivered</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="px-4">Billing Calendar Month</TableHead>
+                    <TableHead className="px-4">Total Jars Count Delivered</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {usageData?.result?.map((u, i) => (
-                    <tr key={i}>
-                      <td className="px-4 py-3 font-semibold text-slate-700">{u.month}</td>
-                      <td className="px-4 py-3 font-mono">{u.quantity} Jars</td>
-                    </tr>
+                    <TableRow key={i}>
+                      <TableCell className="px-4 font-semibold text-slate-700">{u.month}</TableCell>
+                      <TableCell className="px-4 font-mono">{u.quantity} Jars</TableCell>
+                    </TableRow>
                   ))}
                   {(!usageData?.result || usageData.result.length === 0) && (
-                    <tr>
-                      <td colSpan={2} className="px-4 py-6 text-center text-slate-400">
+                    <TableRow>
+                      <TableCell colSpan={2} className="px-4 py-6 text-center text-slate-400">
                         No delivery data available. Log delivered orders in database.
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   )}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
         </div>
