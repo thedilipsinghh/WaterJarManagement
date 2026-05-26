@@ -13,6 +13,8 @@ import {
   useGetVendorStatsQuery,
   useGetVendorJarUsageQuery,
   useGetVendorReportsQuery,
+  useGetVendorOrdersQuery,
+  useDeliverOrderMutation,
 } from "../../store/api/vendor.api"
 import SidebarLayout from "../../components/SidebarLayout"
 import { useToast } from "../../components/Toast"
@@ -36,12 +38,16 @@ export default function VendorDashboard() {
   const { data: usageData, refetch: refetchUsage } = useGetVendorJarUsageQuery(undefined, {
     skip: activeTab !== "reports",
   })
+  const { data: ordersData, refetch: refetchOrders } = useGetVendorOrdersQuery(undefined, {
+    skip: activeTab !== "orders",
+  })
 
   const [createCustomer] = useCreateVendorCustomerMutation()
   const [deleteCustomer] = useDeleteVendorCustomerMutation()
   const [toggleStatus] = useToggleCustomerStatusMutation()
   const [toggleService] = useToggleCustomerServiceMutation()
   const [sendBill] = useSendBillMutation()
+  const [deliverOrder, { isLoading: isDelivering }] = useDeliverOrderMutation()
 
   // Modals state
   const [showAddCustomer, setShowAddCustomer] = useState(false)
@@ -155,6 +161,16 @@ export default function VendorDashboard() {
     }
   }
 
+  const handleDeliverOrder = async (orderId: number) => {
+    try {
+      await deliverOrder(orderId).unwrap()
+      showToast("Order marked as delivered successfully!", "success")
+      refetchOrders()
+    } catch (err: any) {
+      showToast(err.data?.message || "Failed to mark order as delivered", "error")
+    }
+  }
+
   return (
     <SidebarLayout
       role="vendor"
@@ -190,6 +206,73 @@ export default function VendorDashboard() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Revenue (Paid Bills)</span>
               <p className="text-2xl font-semibold text-slate-950 mt-1">₹{statsData?.result?.totalRevenue || 0}</p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "orders" && (
+        <div className="space-y-6">
+          <div className="border-b border-slate-200 pb-5">
+            <h2 className="text-xl font-bold text-slate-900 font-sans">Delivery Requests</h2>
+            <p className="text-sm text-slate-500">
+              Manage incoming water jar delivery requests from your customers.
+            </p>
+          </div>
+
+          <div className="overflow-hidden border border-slate-200 rounded-lg bg-white shadow-sm">
+            <table className="w-full border-collapse text-left text-sm text-slate-600">
+              <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4">Customer Name</th>
+                  <th className="px-6 py-4">Phone</th>
+                  <th className="px-6 py-4">Delivery Address</th>
+                  <th className="px-6 py-4">Quantity</th>
+                  <th className="px-6 py-4">Delivery Date</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {ordersData?.result?.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50/50">
+                    <td className="px-6 py-4 font-medium text-slate-900">{order.customerName}</td>
+                    <td className="px-6 py-4">{order.phone || "-"}</td>
+                    <td className="px-6 py-4 max-w-xs truncate">{order.deliveryAddress}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-900">{order.quantity} jars</td>
+                    <td className="px-6 py-4">{new Date(order.deliveryDate).toLocaleDateString()}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                        order.status === "delivered" 
+                          ? "bg-green-50 text-green-700" 
+                          : order.status === "pending"
+                          ? "bg-yellow-50 text-yellow-700"
+                          : "bg-red-50 text-red-700"
+                      }`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {order.status === "pending" && (
+                        <button
+                          onClick={() => handleDeliverOrder(order.id)}
+                          disabled={isDelivering}
+                          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-sm"
+                        >
+                          Deliver
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {(!ordersData?.result || ordersData.result.length === 0) && (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                      No delivery requests found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

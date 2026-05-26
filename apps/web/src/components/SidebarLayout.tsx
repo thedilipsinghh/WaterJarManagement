@@ -51,6 +51,7 @@ export default function SidebarLayout({
     ],
     vendor: [
       { id: "stats", name: "Overview", icon: Activity },
+      { id: "orders", name: "Delivery Requests", icon: Calendar },
       { id: "customers", name: "My Customers", icon: Users },
       { id: "bills", name: "Billing / Invoices", icon: CreditCard },
       { id: "reports", name: "Reports & Usage", icon: FileText },

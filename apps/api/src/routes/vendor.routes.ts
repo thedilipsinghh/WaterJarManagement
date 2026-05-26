@@ -18,5 +18,7 @@ router.post("/bills", vendorController.sendMonthlyBill.bind(vendorController))
 router.get("/stats", vendorController.getStats.bind(vendorController))
 router.get("/jar-usage", vendorController.getJarUsage.bind(vendorController))
 router.get("/reports", vendorController.getReports.bind(vendorController))
+router.get("/orders", vendorController.listOrders.bind(vendorController))
+router.patch("/orders/:id/deliver", vendorController.deliverOrder.bind(vendorController))
 
 export default router

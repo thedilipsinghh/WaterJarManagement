@@ -431,6 +431,74 @@ export class VendorController {
       res.status(500).json({ message: error.message || "Unable to fetch billing reports" })
     }
   }
+
+  async listOrders(req: Request, res: Response) {
+    try {
+      const authUser = (req as any).user
+      const vendor = await this.getVendorByUserId(authUser.id)
+
+      const result = await db
+        .select({
+          id: orders.id,
+          customerId: orders.customerId,
+          quantity: orders.quantity,
+          status: orders.status,
+          deliveryDate: orders.deliveryDate,
+          createdAt: orders.createdAt,
+          customerName: users.name,
+          phone: customers.phone,
+          deliveryAddress: customers.deliveryAddress,
+        })
+        .from(orders)
+        .innerJoin(customers, eq(orders.customerId, customers.id))
+        .innerJoin(users, eq(customers.userId, users.id))
+        .where(eq(orders.vendorId, vendor.id))
+        .orderBy(sql`${orders.deliveryDate} desc`)
+
+      res.status(200).json({
+        message: "Orders fetched success",
+        result,
+      })
+    } catch (error: any) {
+      console.error(error)
+      res.status(500).json({ message: error.message || "Unable to fetch orders" })
+    }
+  }
+
+  async deliverOrder(req: Request, res: Response) {
+    try {
+      const authUser = (req as any).user
+      const vendor = await this.getVendorByUserId(authUser.id)
+      const { id } = req.params
+
+      const orderRecord = await db
+        .select()
+        .from(orders)
+        .where(and(eq(orders.id, Number(id)), eq(orders.vendorId, vendor.id)))
+        .limit(1)
+
+      if (orderRecord.length === 0) {
+        return res.status(404).json({ message: "Order not found or access denied." })
+      }
+
+      const order = orderRecord[0]
+      if (order.status !== "pending") {
+        return res.status(400).json({ message: `Order is already ${order.status}.` })
+      }
+
+      await db
+        .update(orders)
+        .set({ status: "delivered", updatedAt: new Date() })
+        .where(eq(orders.id, order.id))
+
+      res.status(200).json({
+        message: "Order marked as delivered successfully.",
+      })
+    } catch (error: any) {
+      console.error(error)
+      res.status(500).json({ message: error.message || "Unable to deliver order" })
+    }
+  }
 }
 
 export const vendorController = new VendorController()

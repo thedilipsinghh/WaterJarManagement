@@ -66,6 +66,17 @@ export const vendorApi = baseApi.injectEndpoints({
       query: () => "/vendor/reports",
       providesTags: ["Reports"],
     }),
+    getVendorOrders: builder.query<ApiResponse<any[]>, void>({
+      query: () => "/vendor/orders",
+      providesTags: ["Orders"],
+    }),
+    deliverOrder: builder.mutation<ApiResponse<any>, number>({
+      query: (id) => ({
+        url: `/vendor/orders/${id}/deliver`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Orders", "Stats", "Usage"],
+    }),
   }),
   overrideExisting: true,
 })
@@ -81,4 +92,6 @@ export const {
   useGetVendorStatsQuery,
   useGetVendorJarUsageQuery,
   useGetVendorReportsQuery,
+  useGetVendorOrdersQuery,
+  useDeliverOrderMutation,
 } = vendorApi

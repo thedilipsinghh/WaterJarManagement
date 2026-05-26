@@ -15,12 +15,18 @@ const allowedOrigins = [
   env.LOCAL_URL,
   "http://localhost:3000",
   "http://localhost:19006", // expo web if testing
-  env.FRONTEND_URL
+  env.FRONTEND_URL,
+  "https://water-jar-management-web.vercel.app"
 ].filter(Boolean) as string[]
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://localhost:")) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.startsWith("http://localhost:") ||
+      (origin.startsWith("https://water-jar-management-web") && origin.endsWith(".vercel.app"))
+    ) {
       callback(null, true)
     } else {
       callback(new Error("Not allowed by CORS"))
